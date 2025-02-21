@@ -55,7 +55,8 @@ Isso processará todas as páginas do sitemap e salvará as URLs em `all_sitemap
 
 ---
 
-## <Código>
+## <Código_v0.1>
+Neste código, o script segue um padrão de URL de sitemap no formato https://www.site.com.br/sitemap/products/1 até https://www.site.com.br/sitemap/products/190. No entanto, caso o padrão de URLs das PDPs (Páginas de Produto) no sitemap do seu site seja diferente, será necessário ajustar o código para adaptar o looping à estrutura específica das URLs. Como alternativa, você pode utilizar a versão 0.2 do código, disponível logo abaixo, ideal para extrair listar por lista.
 
 ```python
 # Bibliotecas
@@ -89,7 +90,7 @@ def main():
     total_pages = 190
     all_urls = []
 
-    # Loop para processar todas as páginas do sitemap
+    # Loop para processar todas as listas do sitemap
     for page in range(1, total_pages + 1):
         print(f"Processando sitemap {page}...")
         urls = extract_urls_from_sitemap(page)
@@ -113,7 +114,40 @@ def main():
 if __name__ == "__main__":
     main()
 ```
+## <Código_v0.2>
 
+Nesta versão do código, o script acessará o sitemap especificado e extrairá as URLs exclusivamente dessa lista de sitemap.
+
+```python
+import requests
+from bs4 import BeautifulSoup
+
+# URL do Sitemap
+sitemap_url = "https://www.site.com.br/sitemap/products/1"
+
+# Cabeçalho para simular um navegador real
+headers = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36"
+}
+
+# Fazendo a requisição HTTP com o cabeçalho
+response = requests.get(sitemap_url, headers=headers)
+
+# Se a requisição foi bem-sucedida
+if response.status_code == 200:
+    soup = BeautifulSoup(response.content, "xml")
+    urls = [url.text for url in soup.find_all("loc")]
+
+    # Salvando em um arquivo
+    with open("sitemap_urls.txt", "w") as f:
+        for url in urls:
+            f.write(url + "\n")
+
+    print(f"Extraídas {len(urls)} URLs e salvas no arquivo sitemap_urls.txt")
+else:
+    print(f"Erro ao acessar o sitemap: {response.status_code}")
+
+```
 ---
 
 ## Estrutura do Projeto
